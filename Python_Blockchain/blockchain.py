@@ -1,7 +1,10 @@
 import functools
-# Initializing blockchain list
+import hashlib
+import json
+# The rewards given to miners (for creating a new block)
 MINING_REWARD = 10
 
+# starting block for the blockchain
 genesis_block = {
         'previous_hash': '', 
         'index': 0, 
@@ -14,10 +17,20 @@ participants = {'Justice'}
 
 
 def hash_block(block):
-    return '-'.join([str(block[key]) for key in block])
+    """ Hashes a block and returns a string representation of it
+    
+    Arguments:
+        :block: The block that should be hashed.
+    """
+    return hashlib.sha256(json.dumps(block).encode()).hexdigest() # sha256 creates a 64 character hash, ensures the same input leads to the same hash
 
 
 def get_balance(participant):
+    """ Calculate and return the balance for a participant
+
+    Arguments:
+        :participant: the person for whom to calculate the balance.
+    """
     tx_sender = [[tx['amount'] for tx in block['transactions'] if tx['sender'] == participant] for block in blockchain]
     # Fetch a list of all sent coin amounts for the given person (empty lists are returned if the person was NOT the sender)
     # This fetches sent amounts of open transactions (to avoid double spending)
@@ -68,8 +81,10 @@ def add_transaction(recipient, sender = owner, amount = 1.0):
     return False
 
 def mine_block():
+    """ Create a nre block and add open transaction to it"""
     last_block = blockchain[-1]
     hashed_block = hash_block(last_block)
+    print(hashed_block)
     reward_transaction = {
         'sender': 'MINING',
         'recipient': owner,
