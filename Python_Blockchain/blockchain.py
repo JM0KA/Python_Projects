@@ -1,7 +1,11 @@
 import functools
 import hashlib
-import json
 from collections import OrderedDict
+
+
+from hash_util import hash_string_256, hash_block
+
+
 # The rewards given to miners (for creating a new block)
 MINING_REWARD = 10
 
@@ -20,7 +24,7 @@ participants = {'Justice'}
 
 def valid_proof(transactions, last_hash, proof):
     guess = (str(transactions) + str(last_hash) + str(proof)).encode()
-    guess_hash = hashlib.sha256(guess).hexdigest()
+    guess_hash = hash_string_256(guess).hexdigest()
     print(guess_hash)
     return guess_hash[0:2] == '00'
 
@@ -31,14 +35,6 @@ def proof_of_work():
     while not valid_proof(open_transaction, last_hash, proof):
         proof += 1
     return proof
-
-def hash_block(block):
-    """ Hashes a block and returns a string representation of it
-    
-    Arguments:
-        :block: The block that should be hashed.
-    """
-    return hashlib.sha256(json.dumps(block, sort_keys = True).encode()).hexdigest() # sha256 creates a 64 character hash, ensures the same input leads to the same hash
 
 
 def get_balance(participant):
