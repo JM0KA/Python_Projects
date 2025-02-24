@@ -12,5 +12,5 @@ def hash_block(block):
     Arguments:
         :block: The block that should be hashed.
     """
-    return hash_string_256(json.dumps(block, sort_keys = True).encode()).hexdigest() # sha256 creates a 64 character hash, ensures the same input leads to the same hash
+    return hash_string_256(json.dumps(block, sort_keys = True).encode()) # sha256 creates a 64 character hash, ensures the same input leads to the same hash
 

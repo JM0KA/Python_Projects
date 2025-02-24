@@ -22,10 +22,29 @@ owner = 'Justice'
 participants = {'Justice'}
 
 
+def load_data():
+    with open('blockchain.txt', mode='r') as f:
+        file_content = f.readlines()
+        global blockchain
+        global open_transaction
+        blockchain = file_content[0]
+        open_transaction = file_content[1]
+
+
+load_data()
+
+
+def save_data():
+    print('saving data...')
+    with open('blockchain.txt', mode='w') as f:
+        f.write(str(blockchain))
+        f.write('\n')
+        f.write(str(open_transaction))
+
+
 def valid_proof(transactions, last_hash, proof):
     guess = (str(transactions) + str(last_hash) + str(proof)).encode()
-    guess_hash = hash_string_256(guess).hexdigest()
-    print(guess_hash)
+    guess_hash = hash_string_256(guess)
     return guess_hash[0:2] == '00'
 
 def proof_of_work():
@@ -83,17 +102,14 @@ def add_transaction(recipient, sender = owner, amount = 1.0):
         :recipient: the recipient of the coins.
         :amount: The amount of coins sent with the transaction (default = 1.0)
     """
-    # transaction = {
-    #     'sender': sender,
-    #     'recipient': recipient,
-    #     'amount': amount
-    # }
+    
     transaction = OrderedDict([('sender', sender), ('recipient', recipient), ('amount', amount)])
 
     if verify_transaction(transaction):
         open_transaction.append(transaction)
         participants.add(sender)
         participants.add(recipient)
+        save_data()
         return True
     return False
 
@@ -121,6 +137,7 @@ def mine_block():
         'proof': proof
     }
     blockchain.append(block)
+    save_data()
     return True
 
 
