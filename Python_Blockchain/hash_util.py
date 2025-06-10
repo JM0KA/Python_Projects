@@ -12,5 +12,8 @@ def hash_block(block):
     Arguments:
         :block: The block that should be hashed.
     """
-    return hash_string_256(json.dumps(block, sort_keys = True).encode()) # sha256 creates a 64 character hash, ensures the same input leads to the same hash
+    hashable_block = block.__dict__.copy()
+    hashable_block['transactions'] = [tx.to_ordered_dict() for tx in hashable_block['transactions']]
+    
+    return hash_string_256(json.dumps(hashable_block, sort_keys = True).encode())
 
